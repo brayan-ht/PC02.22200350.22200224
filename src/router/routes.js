@@ -5,6 +5,11 @@ const routes = [
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
   },
 
+  {
+    path: '/digimon',
+    component: () => import('pages/DigimonPage.vue'),
+  },
+
   // Always leave this as last one,
   // but you can also remove it
   {
