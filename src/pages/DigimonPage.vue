@@ -121,7 +121,7 @@ export default {
     // Manejar logout
     const handleLogout = () => {
       logout();
-      router.push('/login');
+      router.push('/');
     };
 
     // Cargar datos al montar el componente

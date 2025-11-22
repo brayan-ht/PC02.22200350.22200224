@@ -14,6 +14,44 @@ export const logout = () => {
   }
 }
 
+/**
+ * Realiza signin usando el endpoint proporcionado.
+ * Guarda el `token` y el `user` en localStorage si la petición es exitosa.
+ * @param {{email:string,password:string}} creds
+ */
+export const signin = async (creds) => {
+  const url = 'https://storedb-api.onrender.com/node-api/users/signin'
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      accept: '*/*',
+    },
+    body: JSON.stringify(creds),
+  })
+
+  if (!res.ok) {
+    // intentar leer mensaje de error
+    let payload = null
+    try { payload = await res.json() } catch { /* ignore */ }
+    const msg = (payload && (payload.message || payload.error)) || `HTTP ${res.status}`
+    throw new Error(msg)
+  }
+
+  const data = await res.json()
+
+  try {
+    if (data.token) localStorage.setItem('token', data.token)
+    if (data.user) localStorage.setItem('user', JSON.stringify(data.user))
+  } catch {
+    // fallthrough: no romper en entornos sin localStorage
+  }
+
+  return data
+}
+
 export default {
+  signin,
   logout,
 }

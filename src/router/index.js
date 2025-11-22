@@ -33,5 +33,26 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   })
 
+  // Ruta global: proteger páginas que tengan `meta.requiresAuth`
+  Router.beforeEach((to, from, next) => {
+    try {
+      const token = localStorage.getItem('token')
+
+      // Si la ruta requiere auth y no hay token, enviar a login
+      if (to.meta && to.meta.requiresAuth && !token) {
+        return next({ path: '/' })
+      }
+
+      // Si el usuario ya está logeado y visita la página de login, redirigir a digimon
+      if (to.path === '/' && token) {
+        return next({ path: '/digimon' })
+      }
+    } catch {
+      // Si localStorage no está disponible, dejar continuar para evitar fallos en SSR/pruebas
+    }
+
+    return next()
+  })
+
   return Router
 })
